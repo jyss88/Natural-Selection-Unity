@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
+/// <summary>
+/// Class handling movement of creature
+/// </summary>
 public class CreatureMovement : MonoBehaviour
 {
 
@@ -12,39 +14,56 @@ public class CreatureMovement : MonoBehaviour
 
     private float velocityConsumFactor = 0.5f;
     private float nextSpawn = 0;
-    private Collider2D targetFood;
+
+    private Vector2 moveSpot;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        moveSpot = new Vector2(Random.Range(-attributes.Bounds.x, attributes.Bounds.x), Random.Range(-attributes.Bounds.y, attributes.Bounds.y));
     }
 
     private void Move() {
-        Vector3 moveVector;
+        //Vector3 moveVector;
 
         switch (attributes.State) {
             case CreatureAttributes.CreatureState.Wander:
-                moveVector = CreateRandomVector();
+                //moveVector = CreateRandomVector();
+                MoveRandomly();
                 break;
             case CreatureAttributes.CreatureState.Hunt:
-                moveVector = CreateHuntVector(attributes.TargetFood);
+                //moveVector = CreateHuntVector(attributes.TargetFood);
+                MoveToPrey();
                 break;
             default:
-                moveVector = CreateRandomVector();
+                MoveRandomly();
                 break;
         }
 
-        creatureTransform.position += moveVector * attributes.Velocity * Time.deltaTime;
+        //creatureTransform.position += moveVector * attributes.Velocity * Time.deltaTime;
 
         // energy consumed at rate of (velocityConsumFactor * velocity^2) units per second
         attributes.Energy -= velocityConsumFactor * Mathf.Pow(attributes.Velocity, 2) * Time.deltaTime;
 
         // Ensure creature remains within bounds
-        if (creatureTransform.position.x > attributes.Bounds.x || creatureTransform.position.x < -attributes.Bounds.x ||
+        /*if (creatureTransform.position.x > attributes.Bounds.x || creatureTransform.position.x < -attributes.Bounds.x ||
             creatureTransform.position.y > attributes.Bounds.y || creatureTransform.position.y < -attributes.Bounds.y) {
             creatureTransform.position -= moveVector;
+        }*/
+    }
+
+    private void MoveRandomly() {
+        float minDist = 0.2f;
+
+        transform.position = Vector2.MoveTowards(transform.position, moveSpot, attributes.velocity * Time.deltaTime);
+
+        if (Vector2.Distance(transform.position, moveSpot) < minDist) {
+            moveSpot = new Vector2(Random.Range(-attributes.Bounds.x, attributes.Bounds.x), Random.Range(-attributes.Bounds.y, attributes.Bounds.y));
         }
+    }
+
+    private void MoveToPrey() {
+        transform.position = Vector2.MoveTowards(transform.position, attributes.TargetFood.transform.position, attributes.velocity * Time.deltaTime);
     }
 
     private Vector3 CreateRandomVector() {

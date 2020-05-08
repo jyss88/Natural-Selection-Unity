@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class containing attributes & state of creature.
+/// Intended to be common interface for creature attributes between all scripts
+/// </summary>
 public class CreatureAttributes : MonoBehaviour
 {
     public enum CreatureState
