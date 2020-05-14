@@ -30,7 +30,9 @@ public class CreatureSight : MonoBehaviour
     /// Finds target food
     /// </summary>
     private void FindVisibleFood() {
-        targetFood = Physics2D.OverlapCircle(transform.position, attributes.SightRadius, foodMask);
-        attributes.TargetFood = targetFood;
+        if (attributes.State == CreatureAttributes.CreatureState.Wander) {
+            targetFood = Physics2D.OverlapCircle(transform.position, attributes.SightRadius, foodMask);
+            attributes.TargetFood = targetFood;
+        } 
     }
 }

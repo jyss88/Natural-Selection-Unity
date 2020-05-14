@@ -17,8 +17,8 @@ public class FoodSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        maxX = Camera.main.orthographicSize;
-        maxY = maxX * Screen.width / Screen.height;
+        maxY = Camera.main.orthographicSize - food.transform.localScale.y;
+        maxX = maxY * Screen.width / Screen.height;
 
         spawnerTransform.localScale += new Vector3(2*maxX, 2*maxY, 0);
     }
@@ -32,7 +32,9 @@ public class FoodSpawner : MonoBehaviour
             for (int i = 0; i < numSpawn; i++) {
                 whereToSpawn = new Vector2(Random.Range(-maxX, maxX), Random.Range(-maxY, maxY));
 
-                Instantiate(food, whereToSpawn, Quaternion.identity);
+                GameObject foodObj = Instantiate(food, whereToSpawn, Quaternion.identity);
+
+                foodObj.transform.parent = gameObject.transform;
             }     
         }
     }

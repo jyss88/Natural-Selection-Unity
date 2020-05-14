@@ -98,10 +98,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b645492367abc944e9c472b9120de22d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocity: 3
+  velocity: 2
   spawnChance: 0.5
-  sightRadius: 2
-  spawnRate: 5
+  sightRadius: 1.5
+  spawnRate: 2
   startingEnergy: 10
 --- !u!114 &1933662621569107887
 MonoBehaviour:
@@ -162,8 +162,8 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 7
+  m_CollisionDetection: 1
+  m_Constraints: 0
 --- !u!114 &1933662621569107884
 MonoBehaviour:
   m_ObjectHideFlags: 0
