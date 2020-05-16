@@ -20,15 +20,12 @@ public class CreatureAttributes : MonoBehaviour
     public float spawnRate = 2;
    
     public float startingEnergy = 10;
-    private float maxX, maxY;
     private float nextSpawn = 0;
     private int generation = 1;
 
     private float deltaMutate = 0.1f;
 
     void Start() {
-        maxX = Camera.main.orthographicSize - transform.localScale.x;
-        maxY = maxX * Screen.width / Screen.height;
         Energy = startingEnergy;
     }
     private void checkEnergy() {
@@ -55,6 +52,7 @@ public class CreatureAttributes : MonoBehaviour
 
                 child.GetComponent<CreatureAttributes>().CloneAttributes(this);
                 child.GetComponent<CreatureAttributes>().Mutate();
+                child.transform.parent = gameObject.transform.parent;
 
                 Energy -= StartingEnergy;
             }
@@ -83,10 +81,6 @@ public class CreatureAttributes : MonoBehaviour
 
     public float StartingEnergy {
         get { return startingEnergy; }
-    }
-
-    public Vector2 Bounds {
-        get { return new Vector2(maxX, maxY); }
     }
 
     public int Generation { get { return generation; } }

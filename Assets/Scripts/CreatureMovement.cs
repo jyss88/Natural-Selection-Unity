@@ -16,11 +16,20 @@ public class CreatureMovement : MonoBehaviour
 
     private Vector2 moveSpot;
     private float timeSinceChanged = 0;
+    private float minX, maxX, minY, maxY;
 
     // Start is called before the first frame update
     void Start()
     {
-        moveSpot = new Vector2(Random.Range(-attributes.Bounds.x, attributes.Bounds.x), Random.Range(-attributes.Bounds.y, attributes.Bounds.y));
+        minX = transform.parent.gameObject.GetComponent<HabitatAttributes>().MinX;
+        maxX = transform.parent.gameObject.GetComponent<HabitatAttributes>().MaxX;
+        minY = transform.parent.gameObject.GetComponent<HabitatAttributes>().MinY;
+        maxY = transform.parent.gameObject.GetComponent<HabitatAttributes>().MaxY;
+        moveSpot = CreateMoveSpot();
+     }
+
+    private Vector2 CreateMoveSpot() {
+        return new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
     }
 
     private void Move() {
@@ -49,7 +58,7 @@ public class CreatureMovement : MonoBehaviour
         timeSinceChanged += Time.deltaTime;
 
         if (Vector2.Distance(transform.position, moveSpot) < minDist || timeSinceChanged > 10) {
-            moveSpot = new Vector2(Random.Range(-attributes.Bounds.x, attributes.Bounds.x), Random.Range(-attributes.Bounds.y, attributes.Bounds.y));
+            moveSpot = CreateMoveSpot();
             timeSinceChanged = 0;
         }
     }

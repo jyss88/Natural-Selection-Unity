@@ -17,8 +17,8 @@ public class FoodSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        maxY = Camera.main.orthographicSize - food.transform.localScale.y;
-        maxX = maxY * Screen.width / Screen.height;
+        maxX = GetComponentInParent<HabitatAttributes>().MaxX;
+        maxY = GetComponentInParent<HabitatAttributes>().MaxY;
 
         spawnerTransform.localScale += new Vector3(2*maxX, 2*maxY, 0);
     }
