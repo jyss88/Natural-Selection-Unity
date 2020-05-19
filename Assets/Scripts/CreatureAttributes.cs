@@ -15,12 +15,10 @@ public class CreatureAttributes : MonoBehaviour
     }
 
     public float velocity = 1;
-    public float spawnChance = 0.5f;
     public float sightRadius = 3;
-    public float spawnRate = 2;
    
     public float startingEnergy = 10;
-    private float nextSpawn = 0;
+    public float hoardEnergy = 10;
     private int generation = 1;
 
     private float deltaMutate = 0.1f;
@@ -43,19 +41,15 @@ public class CreatureAttributes : MonoBehaviour
     }
 
     private void Reproduce() {
-        if (Time.time > nextSpawn) {
-            nextSpawn += spawnRate;
+        if (Energy > (StartingEnergy + HoardEnergy)) {
+            Vector3 offsetVector = new Vector3(transform.localScale.x, transform.localScale.y);
+            GameObject child = Instantiate(gameObject, transform.position + offsetVector, Quaternion.identity);
 
-            if ((Energy > 2 * StartingEnergy) && (Random.Range(0.0f, 1.0f) > SpawnChance)) {
-                Vector3 offsetVector = new Vector3(transform.localScale.x, transform.localScale.y);
-                GameObject child = Instantiate(gameObject, transform.position + offsetVector, Quaternion.identity);
+            child.GetComponent<CreatureAttributes>().CloneAttributes(this);
+            child.GetComponent<CreatureAttributes>().Mutate();
+            child.transform.parent = gameObject.transform.parent;
 
-                child.GetComponent<CreatureAttributes>().CloneAttributes(this);
-                child.GetComponent<CreatureAttributes>().Mutate();
-                child.transform.parent = gameObject.transform.parent;
-
-                Energy -= StartingEnergy;
-            }
+            Energy -= StartingEnergy;
         }
     }
 
@@ -65,22 +59,18 @@ public class CreatureAttributes : MonoBehaviour
         get { return velocity; }
     }
 
-    public float SpawnChance {
-        get { return spawnChance; }
-    }
-
     public float SightRadius {
         get { return sightRadius;  }
-    }
-
-    public float SpawnRate {
-        get { return spawnRate; }
     }
 
     public float Energy { get; set; }
 
     public float StartingEnergy {
         get { return startingEnergy; }
+    }
+
+    public float HoardEnergy {
+        get { return hoardEnergy; }
     }
 
     public int Generation { get { return generation; } }
@@ -90,7 +80,7 @@ public class CreatureAttributes : MonoBehaviour
         velocity = source.Velocity;
         sightRadius = source.SightRadius;
         startingEnergy = source.StartingEnergy;
-        spawnChance = source.SpawnChance;
+        hoardEnergy = source.HoardEnergy;
         generation = source.Generation + 1;
     }
 
@@ -98,7 +88,7 @@ public class CreatureAttributes : MonoBehaviour
         velocity = Mathf.Abs(velocity + Random.Range(-deltaMutate, deltaMutate));
         sightRadius = Mathf.Abs(sightRadius + Random.Range(-deltaMutate, deltaMutate));
         startingEnergy = Mathf.Abs(startingEnergy + Random.Range(-deltaMutate, deltaMutate));
-        spawnChance = Mathf.Clamp(Mathf.Abs(spawnChance + Random.Range(-deltaMutate, deltaMutate)), 0.1f, 1);
+        hoardEnergy = Mathf.Abs(hoardEnergy + Random.Range(-deltaMutate, deltaMutate));
     }
 
     // Update is called once per frame

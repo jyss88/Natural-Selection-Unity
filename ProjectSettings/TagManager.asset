@@ -18,7 +18,7 @@ TagManager:
   - Creatures
   - Food
   - FOV
-  - 
+  - Background
   - 
   - 
   - 
@@ -42,4 +42,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 4269028741
+    locked: 0
+  - name: Foreground
+    uniqueID: 775153703
     locked: 0
