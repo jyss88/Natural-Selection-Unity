@@ -18,7 +18,7 @@ public class CreatureAttributes : MonoBehaviour
     public float sightRadius = 3;
    
     public float startingEnergy = 10;
-    public float hoardEnergy = 10;
+    public float size = 1;
     private int generation = 1;
 
     private float deltaMutate = 0.1f;
@@ -41,7 +41,7 @@ public class CreatureAttributes : MonoBehaviour
     }
 
     private void Reproduce() {
-        if (Energy > (StartingEnergy + HoardEnergy)) {
+        if (Energy > (StartingEnergy + Size * 10)) {
             Vector3 offsetVector = new Vector3(transform.localScale.x, transform.localScale.y);
             GameObject child = Instantiate(gameObject, transform.position + offsetVector, Quaternion.identity);
 
@@ -69,8 +69,12 @@ public class CreatureAttributes : MonoBehaviour
         get { return startingEnergy; }
     }
 
-    public float HoardEnergy {
-        get { return hoardEnergy; }
+    public float Size {
+        get { return size; }
+        set { 
+            size = value;
+            transform.localScale = new Vector3(size, size, 0);
+        }
     }
 
     public int Generation { get { return generation; } }
@@ -80,7 +84,7 @@ public class CreatureAttributes : MonoBehaviour
         velocity = source.Velocity;
         sightRadius = source.SightRadius;
         startingEnergy = source.StartingEnergy;
-        hoardEnergy = source.HoardEnergy;
+        Size = source.Size;
         generation = source.Generation + 1;
     }
 
@@ -88,7 +92,7 @@ public class CreatureAttributes : MonoBehaviour
         velocity = Mathf.Abs(velocity + Random.Range(-deltaMutate, deltaMutate));
         sightRadius = Mathf.Abs(sightRadius + Random.Range(-deltaMutate, deltaMutate));
         startingEnergy = Mathf.Abs(startingEnergy + Random.Range(-deltaMutate, deltaMutate));
-        hoardEnergy = Mathf.Abs(hoardEnergy + Random.Range(-deltaMutate, deltaMutate));
+        Size = Mathf.Clamp(Size + Random.Range(-deltaMutate, deltaMutate), 0.1f, 1000f);
     }
 
     // Update is called once per frame

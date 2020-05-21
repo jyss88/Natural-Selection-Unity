@@ -13,6 +13,7 @@ public class CreatureMovement : MonoBehaviour
     public CreatureAttributes attributes;
 
     private float velocityConsumFactor = 0.5f;
+    private float sizeConsumFactor = 0.5f;
 
     private Vector2 moveSpot;
     private float timeSinceChanged = 0;
@@ -47,8 +48,8 @@ public class CreatureMovement : MonoBehaviour
                 break;
         }
 
-        // energy consumed at rate of (velocityConsumFactor * velocity^2) units per second
-        attributes.Energy -= velocityConsumFactor * Mathf.Pow(attributes.Velocity, 2) * Time.deltaTime;
+        // energy consumed at rate of (velocityConsumFactor * velocity^2 + sizeConsumFactor * size^3) units per second
+        attributes.Energy -= (velocityConsumFactor * Mathf.Pow(attributes.Velocity, 2) + sizeConsumFactor * Mathf.Pow(attributes.Size, 3)) * Time.deltaTime;
     }
 
     private void MoveRandomly() {
