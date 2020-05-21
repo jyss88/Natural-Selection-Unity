@@ -8,13 +8,15 @@ public class TimeManager : MonoBehaviour
     public static bool isPaused = false;
     public Button pauseButton;
     public Button playButton;
-    public Button fastButton;
+    public Text sliderText;
+
+    private float speed;
 
     private void Start() {
         Pause();
         pauseButton.interactable = false;
         playButton.interactable = true;
-        fastButton.interactable = true;
+        speed = 1f;
     }
 
     // Update is called once per frame
@@ -29,30 +31,24 @@ public class TimeManager : MonoBehaviour
 
         pauseButton.interactable = false;
         playButton.interactable = true;
-        fastButton.interactable = true;
 
         Debug.Log("Simulation paused");
     }
 
     public void Resume() {
-        Time.timeScale = 1f;
+        Time.timeScale = speed;
         isPaused = false;
 
         pauseButton.interactable = true;
         playButton.interactable = false;
-        fastButton.interactable = true;
 
         Debug.Log("Simulation resumed");
     }
 
-    public void DoubleSpeed() {
-        Time.timeScale = 2f;
-        isPaused = false;
+    public void ChangeSpeed(float newSpeed) {
+        speed = newSpeed;
+        Time.timeScale = speed;
 
-        pauseButton.interactable = true;
-        playButton.interactable = true;
-        fastButton.interactable = false;
-
-        Debug.Log("Double speed activated");
+        sliderText.text = speed.ToString("F2") + "X";
     }
 }
