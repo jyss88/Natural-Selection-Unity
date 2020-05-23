@@ -7,39 +7,29 @@ using UnityEngine.UI;
 public class GameStats : MonoBehaviour
 {
     GameObject[] creatures;
-    int noCreatures;
-    float avgVelocity;
-    float avgSight;
-    float avgSize;
 
-    public Text noCreaturesText;
-    public Text avgVelocityText;
-    public Text avgSightText;
-    public Text avgSizeText;
+    public int NoCreatures { get; private set; }
+    public float AvgVelocity { get; private set; }
+    public float AvgSight { get; private set; }
+    public float AvgSize { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
         creatures = GameObject.FindGameObjectsWithTag("Creature");
-        noCreatures = creatures.Length;
-        avgVelocity = GetAvgVelocity(creatures);
-        avgSight = GetAvgSight(creatures);
+        NoCreatures = creatures.Length;
+        AvgVelocity = GetAvgVelocity(creatures);
+        AvgSight = GetAvgSight(creatures);
     }
 
     // Update is called once per frame
     void Update()
     {
         creatures = GameObject.FindGameObjectsWithTag("Creature") ;
-        noCreatures = creatures.Length;
-        avgVelocity = GetAvgVelocity(creatures);
-        avgSight = GetAvgSight(creatures);
-        avgSize = GetAvgSize(creatures);
-
-
-        noCreaturesText.text = "Number of creatures: " + noCreatures.ToString();
-        avgVelocityText.text = "Avg velocity: " + avgVelocity.ToString("F2");
-        avgSightText.text = "Avg sight radius: " + avgSight.ToString("F2");
-        avgSizeText.text = "Avg size: " + avgSize.ToString("F2");
+        NoCreatures = creatures.Length;
+        AvgVelocity = GetAvgVelocity(creatures);
+        AvgSight = GetAvgSight(creatures);
+        AvgSize = GetAvgSize(creatures);
     }
 
     private float GetAvgVelocity(GameObject[] creaturesIn) {
