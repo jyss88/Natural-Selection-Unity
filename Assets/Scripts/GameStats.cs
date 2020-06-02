@@ -6,30 +6,30 @@ using UnityEngine.UI;
 
 public class GameStats : MonoBehaviour
 {
-    GameObject[] creatures;
-
     public int NoCreatures { get; private set; }
     public float AvgVelocity { get; private set; }
     public float AvgSight { get; private set; }
     public float AvgSize { get; private set; }
 
+    public GameObject[] Creatures { get; private set; }
+
     // Start is called before the first frame update
     void Start()
     {
-        creatures = GameObject.FindGameObjectsWithTag("Creature");
-        NoCreatures = creatures.Length;
-        AvgVelocity = GetAvgVelocity(creatures);
-        AvgSight = GetAvgSight(creatures);
+        Creatures = GameObject.FindGameObjectsWithTag("Creature");
+        NoCreatures = Creatures.Length;
+        AvgVelocity = GetAvgVelocity(Creatures);
+        AvgSight = GetAvgSight(Creatures);
     }
 
     // Update is called once per frame
     void Update()
     {
-        creatures = GameObject.FindGameObjectsWithTag("Creature") ;
-        NoCreatures = creatures.Length;
-        AvgVelocity = GetAvgVelocity(creatures);
-        AvgSight = GetAvgSight(creatures);
-        AvgSize = GetAvgSize(creatures);
+        Creatures = GameObject.FindGameObjectsWithTag("Creature") ;
+        NoCreatures = Creatures.Length;
+        AvgVelocity = GetAvgVelocity(Creatures);
+        AvgSight = GetAvgSight(Creatures);
+        AvgSize = GetAvgSize(Creatures);
     }
 
     private float GetAvgVelocity(GameObject[] creaturesIn) {

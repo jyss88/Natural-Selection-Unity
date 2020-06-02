@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class TimeManager : MonoBehaviour
 {
-    public static bool isPaused = false;
+    public static bool isPaused = true;
     public Button pauseButton;
     public Button playButton;
     public Text sliderText;

@@ -1242,7 +1242,7 @@ GameObject:
   - component: {fileID: 994951689}
   - component: {fileID: 994951688}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Main GUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1931,6 +1931,7 @@ GameObject:
   - component: {fileID: 1625500578}
   - component: {fileID: 1625500579}
   - component: {fileID: 1625500580}
+  - component: {fileID: 1625500581}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -2009,6 +2010,20 @@ MonoBehaviour:
   pauseButton: {fileID: 2082554856}
   playButton: {fileID: 2020323086}
   sliderText: {fileID: 1240243013}
+--- !u!114 &1625500581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1625500575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5fc4058482620e4d95125fb5ae2ef22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pollFreq: 1
+  stats: {fileID: 1625500576}
 --- !u!1 &1734481129
 GameObject:
   m_ObjectHideFlags: 0
@@ -2513,6 +2528,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1625500581}
+        m_MethodName: StartCollection
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2020323087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2633,6 +2659,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1625500580}
         m_MethodName: Pause
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1625500581}
+        m_MethodName: StopCollection
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
