@@ -1,26 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FoodSpawner : MonoBehaviour
 {
     public Transform spawnerTransform;
     public GameObject food;
-    public float spawnRate = 4;
+    public Text numFoodText;
+    public float spawnRate = 1;
     public float numSpawn = 10;
 
-    private float maxX;
-    private float maxY;
     private float nextSpawn = 0;
     private Vector2 whereToSpawn;
+    private HabitatAttributes habAttr;
 
     // Start is called before the first frame update
     void Start()
     {
-        maxX = GetComponentInParent<HabitatAttributes>().MaxX;
-        maxY = GetComponentInParent<HabitatAttributes>().MaxY;
-
-        spawnerTransform.localScale += new Vector3(2*maxX, 2*maxY, 0);
+        habAttr = gameObject.GetComponentInParent<HabitatAttributes>();
+        numFoodText.text = numSpawn.ToString();
     }
 
     // Update is called once per frame
@@ -30,12 +29,17 @@ public class FoodSpawner : MonoBehaviour
             nextSpawn = Time.time + spawnRate;
 
             for (int i = 0; i < numSpawn; i++) {
-                whereToSpawn = new Vector2(Random.Range(-maxX, maxX), Random.Range(-maxY, maxY));
+                whereToSpawn = new Vector2(Random.Range(habAttr.MinX, habAttr.MaxX), Random.Range(habAttr.MinY, habAttr.MaxY));
 
                 GameObject foodObj = Instantiate(food, whereToSpawn, Quaternion.identity);
 
                 foodObj.transform.parent = gameObject.transform;
             }     
         }
+    }
+
+    public void ChangeNumSpawn(float newNumSpawn) {
+        numSpawn = newNumSpawn;
+        numFoodText.text = Mathf.RoundToInt(numSpawn).ToString();
     }
 }
