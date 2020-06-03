@@ -12,9 +12,8 @@ public class DataCollection : MonoBehaviour
 
     public static bool isCollecting = false;
 
-    private float currentTime = 0;
-    private int noCreatures = 0;
-
+    private List<float> timeBuf = new List<float>();
+    private List<int> countBuf = new List<int>();
     private List<List<float>> velocityBuf = new List<List<float>>();
     private List<List<float>> sightBuf = new List<List<float>>();
     private List<List<float>> sizeBuf = new List<List<float>>();
@@ -33,6 +32,8 @@ public class DataCollection : MonoBehaviour
     {
         path = System.IO.Path.GetDirectoryName(Application.dataPath) + "/data/";
         Debug.Log("Data will be logged at path: " + path);
+
+        ClearFiles();
         isCollecting = true;
         StartCoroutine(DataCollectLoop());
         StartCoroutine(DataSaveLoop());
@@ -60,6 +61,9 @@ public class DataCollection : MonoBehaviour
             // PROTECTED REGION
             mut.WaitOne();
             Debug.Log("Data collection is entering protected region.");
+            timeBuf.Add(Time.time);
+            countBuf.Add(GameStats.creatureAttributes.Count);
+
             velocityBuf.Add(GetVelocities(GameStats.creatureAttributes));
             sightBuf.Add(GetSights(GameStats.creatureAttributes));
             sizeBuf.Add(GetSizes(GameStats.creatureAttributes));
@@ -79,23 +83,11 @@ public class DataCollection : MonoBehaviour
                 yield return new WaitForSecondsRealtime(10f);
             }
 
-            mut.WaitOne();
-            Debug.Log("Data saving coroutine is entering protected region.");
             // write data
-
-            ClearBuffers();
-
-            Debug.Log("Data saving coroutine is exiting protected region.");
-            mut.ReleaseMutex();
+            WriteFiles();
 
             yield return new WaitForSecondsRealtime(60f);
         }
-    }
-
-    private void ClearBuffers() {
-        velocityBuf.Clear();
-        sightBuf.Clear();
-        sightBuf.Clear();
     }
 
     private List<float> GetVelocities(List<CreatureAttributes> creatureList) {
@@ -125,7 +117,74 @@ public class DataCollection : MonoBehaviour
         return temp;
     }
 
+    private void ClearFiles() {
+        using (StreamWriter timeW = new StreamWriter(path + timePath, append: false))
+        using (StreamWriter countW = new StreamWriter(path + countPath, append: false))
+        using (StreamWriter velocityW = new StreamWriter(path + velocityPath, append: false))
+        using (StreamWriter sightW = new StreamWriter(path + sightPath, append: false))
+        using (StreamWriter sizeW = new StreamWriter(path + sizePath, append: false)) {
+            timeW.WriteLine("");
+            countW.WriteLine("");
+            velocityW.WriteLine("");
+            sightW.WriteLine("");
+            sizeW.WriteLine("");
+        }
+
+    }
+
+    private void WriteFiles() {
+        // Enter protected region
+        mut.WaitOne();
+        Debug.Log("Data saving coroutine is entering protected region.");
+
+        using (StreamWriter timeW = new StreamWriter(path + timePath, append: true)) {
+            foreach (float entry in timeBuf) {
+                timeW.WriteLine(entry.ToString());
+            }
+        }
+
+        using (StreamWriter countW = new StreamWriter(path + countPath, append: true)) {
+            foreach(int entry in countBuf) {
+                countW.WriteLine(entry.ToString());
+            }
+        }
+
+        using (StreamWriter velocityW = new StreamWriter(path + velocityPath, append: true)) {
+            foreach(List<float> row in velocityBuf) {
+                WriteListData(row, velocityW);
+            }
+        }
+
+        using (StreamWriter sightW = new StreamWriter(path + sightPath, append: true)) {
+            foreach(List<float> row in sightBuf) {
+                WriteListData(row, sightW);
+            }
+        }
+
+        using (StreamWriter sizeW = new StreamWriter(path + sizePath, append: true)) {
+            foreach (List<float> row in sizeBuf) {
+                WriteListData(row, sizeW);
+            }
+        }
+
+        ClearBuffers(); // Clear buffers
+
+        // Exit protected region
+        Debug.Log("Data saving coroutine is exiting protected region.");
+        mut.ReleaseMutex();
+    }
+
+    private void ClearBuffers() {
+        timeBuf.Clear();
+        countBuf.Clear();
+        velocityBuf.Clear();
+        sightBuf.Clear();
+        sightBuf.Clear();
+    }
+
+
+
     private void WriteListData(List<float> list, StreamWriter writer) {
-        writer.WriteLine(string.Join(",", list), true);
+        writer.WriteLine(string.Join(",", list));
     }
 }

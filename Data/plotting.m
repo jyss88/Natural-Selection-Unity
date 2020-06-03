@@ -15,7 +15,7 @@ title('Creature population');
 %% Velocities histogram
 
 figure()
-for i = 1:39
+for i = 1:size(velocities, 1)
    temp1 = velocities(i, :);
    temp2 = temp1(temp1 > 0);
    histogram(temp2)
@@ -24,7 +24,7 @@ end
 
 %% Sights
 figure()
-for i = 1:39
+for i = 1:size(sights, 1)
    temp1 = sights(i, :);
    temp2 = temp1(temp1 > 0);
    histogram(temp2)
@@ -33,7 +33,7 @@ end
 
 %% Sizes
 figure()
-for i = 1:39
+for i = 1:size(sizes, 1)
    temp1 = sizes(i, :);
    temp2 = temp1(temp1 > 0);
    histogram(temp2)

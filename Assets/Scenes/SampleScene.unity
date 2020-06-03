@@ -2023,7 +2023,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pollingPeriod: 10
-  savePeriod: 60
+  savePeriod: 30
   stats: {fileID: 1625500576}
 --- !u!1 &1734481129
 GameObject:
