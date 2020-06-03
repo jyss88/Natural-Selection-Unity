@@ -25,6 +25,11 @@ public class CreatureAttributes : MonoBehaviour
 
     void Start() {
         Energy = startingEnergy;
+        GameStats.creatureAttributes.Add(this);
+    }
+
+    private void OnDestroy() {
+        GameStats.creatureAttributes.Remove(this);
     }
     private void checkEnergy() {
         if (Energy <= 0) {

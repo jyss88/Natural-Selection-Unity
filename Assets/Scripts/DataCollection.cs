@@ -1,23 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using UnityEngine;
 
 public class DataCollection : MonoBehaviour
 {
-    public float pollT = 10f;
+    public float pollingPeriod = 10f;
+    public float savePeriod = 30f;
     public GameStats stats;
 
     public static bool isCollecting = false;
 
-    private GameObject[] creatures;
     private float currentTime = 0;
     private int noCreatures = 0;
-    private List<float> Velocities = new List<float>();
-    private List<float> Sights = new List<float>();
-    private List<float> Sizes = new List<float>();
 
-    private string path = "D:/Documents/GitHub/UnityNaturalSelection/Data/";
+    private List<List<float>> velocityBuf = new List<List<float>>();
+    private List<List<float>> sightBuf = new List<List<float>>();
+    private List<List<float>> sizeBuf = new List<List<float>>();
+
+    private Mutex mut = new Mutex();
+
+    private string path;
     private string timePath = "time.csv";
     private string countPath = "counts.csv";
     private string velocityPath = "velocities.csv";
@@ -27,8 +31,11 @@ public class DataCollection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-        
+        path = System.IO.Path.GetDirectoryName(Application.dataPath) + "/data/";
+        Debug.Log("Data will be logged at path: " + path);
+        isCollecting = true;
+        StartCoroutine(DataCollectLoop());
+        StartCoroutine(DataSaveLoop());
     }
 
     public void StartCollection() {
@@ -37,60 +44,88 @@ public class DataCollection : MonoBehaviour
     }
 
     public void StopCollection() {
+        mut.WaitOne();
         isCollecting = false;
+        mut.ReleaseMutex();
     }
 
     IEnumerator DataCollectLoop() {
         Debug.Log("Data collection started");
-
-        using (StreamWriter countWriter = new StreamWriter(path + countPath))
-        using (StreamWriter velocityWriter = new StreamWriter(path + velocityPath))
-        using (StreamWriter sightWriter = new StreamWriter(path + sightPath))
-        using (StreamWriter sizeWriter = new StreamWriter(path + sizePath))
-        using (StreamWriter timeWriter = new StreamWriter(path + timePath)) {
-            while (isCollecting) {
-                while (TimeManager.isPaused) {
-                    Debug.Log("Data loop paused");
-                    yield return null;
-                }
-
-                GetData();
-
-                timeWriter.WriteLine(currentTime.ToString());
-                countWriter.WriteLine(noCreatures.ToString());
-
-                WriteListData(Velocities, velocityWriter);
-                WriteListData(Sights, sightWriter);
-                WriteListData(Sizes, sizeWriter);
-
-
-                Debug.Log("Data point collected");
-                yield return new WaitForSecondsRealtime(pollT);
+        while (isCollecting) {
+            while (TimeManager.isPaused) {
+                Debug.Log("Data loop paused");
+                yield return null;
             }
+
+            // PROTECTED REGION
+            mut.WaitOne();
+            Debug.Log("Data collection is entering protected region.");
+            velocityBuf.Add(GetVelocities(GameStats.creatureAttributes));
+            sightBuf.Add(GetSights(GameStats.creatureAttributes));
+            sizeBuf.Add(GetSizes(GameStats.creatureAttributes));
+            Debug.Log("Data collection is exiting protected region.");
+            mut.ReleaseMutex();
+
+            yield return new WaitForSeconds(pollingPeriod);
         }
 
         Debug.Log("Data collection complete");
     }
 
-    private void GetData() {
-        creatures = stats.Creatures;
+    IEnumerator DataSaveLoop() {
+        while(true) {
+            while (TimeManager.isPaused) {
+                Debug.Log("Saving data is paused");
+                yield return new WaitForSecondsRealtime(10f);
+            }
 
-        Velocities.Clear();
-        Sights.Clear();
-        Sizes.Clear();
+            mut.WaitOne();
+            Debug.Log("Data saving coroutine is entering protected region.");
+            // write data
 
-        currentTime = Time.time;
-        noCreatures = creatures.Length;
+            ClearBuffers();
 
-        foreach (GameObject creature in creatures) {
-            CreatureAttributes creatureAttr = creature.GetComponent<CreatureAttributes>();
-            Velocities.Add(creatureAttr.Velocity);
-            Sights.Add(creatureAttr.SightRadius);
-            Sizes.Add(creatureAttr.Size);
+            Debug.Log("Data saving coroutine is exiting protected region.");
+            mut.ReleaseMutex();
+
+            yield return new WaitForSecondsRealtime(60f);
         }
     }
 
+    private void ClearBuffers() {
+        velocityBuf.Clear();
+        sightBuf.Clear();
+        sightBuf.Clear();
+    }
+
+    private List<float> GetVelocities(List<CreatureAttributes> creatureList) {
+        List<float> temp = new List<float>();
+        foreach(CreatureAttributes creature in creatureList) {
+            temp.Add(creature.Velocity);
+        }
+
+        return temp;
+    }
+
+    private List<float> GetSights(List<CreatureAttributes> creatureList) {
+        List<float> temp = new List<float>();
+        foreach (CreatureAttributes creature in creatureList) {
+            temp.Add(creature.GetComponent<CreatureAttributes>().SightRadius);
+        }
+
+        return temp;
+    }
+
+    private List<float> GetSizes(List<CreatureAttributes> creatureList) {
+        List<float> temp = new List<float>();
+        foreach (CreatureAttributes creature in creatureList) {
+            temp.Add(creature.size);
+        }
+
+        return temp;
+    }
+
     private void WriteListData(List<float> list, StreamWriter writer) {
-        writer.WriteLine(string.Join(",", list));
+        writer.WriteLine(string.Join(",", list), true);
     }
 }
