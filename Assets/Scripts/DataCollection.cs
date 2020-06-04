@@ -4,23 +4,28 @@ using System.IO;
 using System.Threading;
 using UnityEngine;
 
+/// <summary>
+/// Class for handling data collection
+/// </summary>
 public class DataCollection : MonoBehaviour
 {
-    public float pollingPeriod = 10f;
-    public float savePeriod = 30f;
     public GameStats stats;
-
     public static bool isCollecting = false;
 
+    public float pollingPeriod = 10f; // Data sampling period
+    public float savePeriod = 30f; // Data saving period
+
+    // Data buffers
     private List<float> timeBuf = new List<float>();
     private List<int> countBuf = new List<int>();
     private List<List<float>> velocityBuf = new List<List<float>>();
     private List<List<float>> sightBuf = new List<List<float>>();
     private List<List<float>> sizeBuf = new List<List<float>>();
 
-    private Mutex mut = new Mutex();
+    private Mutex fileMut = new Mutex(); // Mutex for file access
 
-    private string path;
+    // Paths for output files
+    private string path; // Data path
     private string timePath = "time.csv";
     private string countPath = "counts.csv";
     private string velocityPath = "velocities.csv";
@@ -30,60 +35,69 @@ public class DataCollection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        path = System.IO.Path.GetDirectoryName(Application.dataPath) + "/data/";
+        path = System.IO.Path.GetDirectoryName(Application.dataPath) + "/data/"; // Find data directory
         Debug.Log("Data will be logged at path: " + path);
 
         ClearFiles();
         isCollecting = true;
+
+        // Start coroutines
         StartCoroutine(DataCollectLoop());
         StartCoroutine(DataSaveLoop());
     }
 
+    /// <summary>
+    /// Starts collecting coroutine
+    /// </summary>
     public void StartCollection() {
         isCollecting = true;
         StartCoroutine(DataCollectLoop());
     }
 
+    /// <summary>
+    /// Stops collecting coroutine
+    /// </summary>
     public void StopCollection() {
-        mut.WaitOne();
+        fileMut.WaitOne();
         isCollecting = false;
-        mut.ReleaseMutex();
+        fileMut.ReleaseMutex();
     }
 
+    /// <summary>
+    /// Coroutine for collecting data
+    /// </summary>
+    /// <returns></returns>
     IEnumerator DataCollectLoop() {
         Debug.Log("Data collection started");
         while (isCollecting) {
-            /*while (TimeManager.isPaused) {
-                Debug.Log("Data loop paused");
-                yield return null;
-            }*/
-
             // PROTECTED REGION
-            mut.WaitOne();
+            fileMut.WaitOne(); // Signal mutex
             Debug.Log("Data collection is entering protected region.");
+
+            // Add data to buffers
             timeBuf.Add(Time.time);
             countBuf.Add(GameStats.creatureAttributes.Count);
 
             velocityBuf.Add(GetVelocities(GameStats.creatureAttributes));
             sightBuf.Add(GetSights(GameStats.creatureAttributes));
             sizeBuf.Add(GetSizes(GameStats.creatureAttributes));
+
             Debug.Log("Data collection is exiting protected region.");
-            mut.ReleaseMutex();
+            fileMut.ReleaseMutex(); // Signal mutex
             // END PROTECTED REGION
 
-            yield return new WaitForSeconds(pollingPeriod);
+            yield return new WaitForSeconds(pollingPeriod); // Wait for polling period
         }
 
         Debug.Log("Data collection complete");
     }
 
+    /// <summary>
+    /// Coroutine for saving data
+    /// </summary>
+    /// <returns></returns>
     IEnumerator DataSaveLoop() {
         while(true) {
-            /*while (TimeManager.isPaused) {
-                Debug.Log("Saving data is paused");
-                yield return new WaitForSecondsRealtime(10f);
-            }*/
-
             // write data
             SaveFiles();
 
@@ -91,33 +105,51 @@ public class DataCollection : MonoBehaviour
         }
     }
 
-    private List<float> GetVelocities(List<CreatureAttributes> creatureList) {
+    /// <summary>
+    /// Collects velocity data & saves it to buffer
+    /// </summary>
+    /// <param name="attrList">List of creature attributes</param>
+    /// <returns>List of creature velocities</returns>
+    private List<float> GetVelocities(List<CreatureAttributes> attrList) {
         List<float> temp = new List<float>();
-        foreach(CreatureAttributes creature in creatureList) {
+        foreach(CreatureAttributes creature in attrList) {
             temp.Add(creature.Velocity);
         }
 
         return temp;
     }
 
-    private List<float> GetSights(List<CreatureAttributes> creatureList) {
+    /// <summary>
+    /// Collects creature sight radius data & saves it to buffer
+    /// </summary>
+    /// <param name="attrList">List of creature attributes</param>
+    /// <returns>List of creature sight radii</returns>
+    private List<float> GetSights(List<CreatureAttributes> attrList) {
         List<float> temp = new List<float>();
-        foreach (CreatureAttributes creature in creatureList) {
+        foreach (CreatureAttributes creature in attrList) {
             temp.Add(creature.GetComponent<CreatureAttributes>().SightRadius);
         }
 
         return temp;
     }
 
-    private List<float> GetSizes(List<CreatureAttributes> creatureList) {
+    /// <summary>
+    /// Collects creature size data & saves it to buffer
+    /// </summary>
+    /// <param name="attrList">List of creature attributes</param>
+    /// <returns>List of creature sizes</returns>
+    private List<float> GetSizes(List<CreatureAttributes> attrList) {
         List<float> temp = new List<float>();
-        foreach (CreatureAttributes creature in creatureList) {
+        foreach (CreatureAttributes creature in attrList) {
             temp.Add(creature.size);
         }
 
         return temp;
     }
 
+    /// <summary>
+    /// Clears all files
+    /// </summary>
     private void ClearFiles() {
         using (StreamWriter timeW = new StreamWriter(path + timePath, append: false))
         using (StreamWriter countW = new StreamWriter(path + countPath, append: false))
@@ -133,10 +165,14 @@ public class DataCollection : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Saves buffer to csv fils.
+    /// Also clears buffer
+    /// </summary>
     public void SaveFiles() {
         if (timeBuf.Count > 0) {
             // Enter protected region
-            mut.WaitOne();
+            fileMut.WaitOne();
             Debug.Log("Data saving coroutine is entering protected region.");
 
             using (StreamWriter timeW = new StreamWriter(path + timePath, append: true)) {
@@ -173,10 +209,13 @@ public class DataCollection : MonoBehaviour
 
             // Exit protected region
             Debug.Log("Data saving coroutine is exiting protected region.");
-            mut.ReleaseMutex();
+            fileMut.ReleaseMutex();
         } 
     }
 
+    /// <summary>
+    /// Clears buffer
+    /// </summary>
     private void ClearBuffers() {
         timeBuf.Clear();
         countBuf.Clear();
@@ -185,8 +224,11 @@ public class DataCollection : MonoBehaviour
         sizeBuf.Clear();
     }
 
-
-
+    /// <summary>
+    /// Writes a list of data to a StreamWriter
+    /// </summary>
+    /// <param name="list"></param>
+    /// <param name="writer"></param>
     private void WriteListData(List<float> list, StreamWriter writer) {
         writer.WriteLine(string.Join(",", list));
     }

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class handling nutrition of food
+/// </summary>
 public class Nutrition : MonoBehaviour
 {
 

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class handling habitat attributes
+/// </summary>
 public class HabitatAttributes : MonoBehaviour
 {
     private Vector2 screenBounds;
@@ -27,8 +30,10 @@ public class HabitatAttributes : MonoBehaviour
     }
 
     private void OnValidate() {
+        // Compute screen bounds
         screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
 
+        // Convert to X and Y coordinates
         MaxX = screenBounds.x - rightOffset;
         MinX = -screenBounds.x + leftOffset;
         MaxY = screenBounds.y - topOffset;
