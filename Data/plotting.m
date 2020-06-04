@@ -7,35 +7,66 @@ velocities = csvread('velocities.csv');
 sights = csvread('sights.csv');
 sizes = csvread('sizes.csv');
 
+%% Convert 0 to NaN
+velocities(velocities == 0) = NaN;
+sights(sights == 0) = NaN;
+sizes(sizes == 0) = NaN;
+
+%% Max, min, and avg
+maxV = max(velocities, [], 2, 'omitnan');
+minV = min(velocities, [], 2, 'omitnan');
+avgV = mean(velocities, 2, 'omitnan');
+
+maxSt = max(sights, [], 2, 'omitnan');
+minSt = min(sights, [], 2, 'omitnan');
+avgSt = mean(sights, 2, 'omitnan');
+
+maxSz = max(sizes, [], 2, 'omitnan');
+minSz = min(sizes, [], 2, 'omitnan');
+avgSz = mean(sizes, 2, 'omitnan');
+
 %% Plot count
 figure()
+subplot(2, 2, 1);
+hold on;
+grid on;
 plot(time, counts);
-title('Creature population');
+title('Population');
+xlabel('Time');
+ylabel('Number of creatures');
 
-%% Velocities histogram
+%% Velocity plot
+subplot(2, 2, 2);
+hold on;
+grid on;
+plot(time, avgV);
+plot(time, maxV);
+plot(time, minV);
 
-figure()
-for i = 1:size(velocities, 1)
-   temp1 = velocities(i, :);
-   temp2 = temp1(temp1 > 0);
-   histogram(temp2)
-   pause(0.1)
-end
+title('Velocity');
+xlabel('Time');
+ylabel('Velocity');
 
-%% Sights
-figure()
-for i = 1:size(sights, 1)
-   temp1 = sights(i, :);
-   temp2 = temp1(temp1 > 0);
-   histogram(temp2)
-   pause(0.1)
-end
+%% Sightplot
+subplot(2, 2, 3);
+hold on;
+grid on;
+plot(time, avgSt);
+plot(time, maxSt);
+plot(time, minSt);
 
-%% Sizes
-figure()
-for i = 1:size(sizes, 1)
-   temp1 = sizes(i, :);
-   temp2 = temp1(temp1 > 0);
-   histogram(temp2)
-   pause(0.1)
-end
+title('Sight radius');
+xlabel('Time');
+ylabel('Sight radius');
+
+%% Sizeplot
+subplot(2, 2, 4)
+hold on;
+grid on;
+plot(time, avgSz);
+plot(time, maxSz);
+plot(time, minSz);
+
+title('Size');
+xlabel('Time');
+ylabel('Size');
