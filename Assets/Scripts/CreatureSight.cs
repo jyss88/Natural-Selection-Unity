@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using UnityEngine;
 
+/// <summary>
+/// Class handling creature sight
+/// </summary>
 public class CreatureSight : MonoBehaviour
 {
     public CreatureAttributes attributes;

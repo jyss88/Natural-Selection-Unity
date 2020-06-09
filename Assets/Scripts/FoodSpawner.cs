@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Class handling food spawner
+/// </summary>
 public class FoodSpawner : MonoBehaviour
 {
     public Transform spawnerTransform;
@@ -38,6 +41,10 @@ public class FoodSpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Changes the number of food spawned per tick
+    /// </summary>
+    /// <param name="newNumSpawn"></param>
     public void ChangeNumSpawn(float newNumSpawn) {
         numSpawn = newNumSpawn;
         numFoodText.text = Mathf.RoundToInt(numSpawn).ToString();

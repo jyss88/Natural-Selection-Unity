@@ -29,13 +29,32 @@ public class CreatureMovement : MonoBehaviour
         moveSpot = CreateMoveSpot();
      }
 
+    // Update is called once per frame
+    void FixedUpdate() {
+        Move();
+    }
+
+    // Collision
+    void OnCollisionEnter2D(Collision2D collision) {
+        // Eat food
+        if (collision.gameObject.tag.Equals("Food")) {
+            attributes.Energy += collision.gameObject.GetComponent<Nutrition>().NutritionalValue;
+            Destroy(collision.gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Creautes a random movepoint
+    /// </summary>
+    /// <returns>Move point</returns>
     private Vector2 CreateMoveSpot() {
         return new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
     }
 
+    /// <summary>
+    /// Moves creature
+    /// </summary>
     private void Move() {
-        //Vector3 moveVector;
-
         switch (attributes.State) {
             case CreatureAttributes.CreatureState.Wander:
                 MoveRandomly();
@@ -52,6 +71,9 @@ public class CreatureMovement : MonoBehaviour
         attributes.Energy -= (velocityConsumFactor * Mathf.Pow(attributes.Velocity, 2) + sizeConsumFactor * Mathf.Pow(attributes.Size, 3)) * Time.deltaTime;
     }
 
+    /// <summary>
+    /// Moves creature randomly
+    /// </summary>
     private void MoveRandomly() {
         float minDist = 0.2f;
 
@@ -64,25 +86,14 @@ public class CreatureMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Moves creature towards prey
+    /// </summary>
     private void MoveToPrey() {
         if (attributes.TargetFood) {
             transform.position = Vector2.MoveTowards(transform.position, attributes.TargetFood.transform.position, attributes.velocity * Time.deltaTime);
         } else {
             MoveRandomly();
-        }
-    }
-
-    // Update is called once per frame
-    void FixedUpdate() {
-        Move();
-    }
-
-    // Collision
-    void OnCollisionEnter2D(Collision2D collision) {
-        // Eat food
-        if (collision.gameObject.tag.Equals("Food")) {
-            attributes.Energy += collision.gameObject.GetComponent<Nutrition>().NutritionalValue;
-            Destroy(collision.gameObject);
         }
     }
 }
