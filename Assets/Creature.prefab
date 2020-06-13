@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1933662621569107886}
   - component: {fileID: 1933662621569107885}
   - component: {fileID: 1933662621569107884}
+  - component: {fileID: 3207488595792920840}
   m_Layer: 0
   m_Name: Creature
   m_TagString: Creature
@@ -76,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 846056c61c864f0409b3228ae76f5aa7, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9686742, g: 0.9030138, b: 0.9416311, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -99,10 +100,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velocity: 2
-  spawnChance: 0.5
   sightRadius: 1.5
-  spawnRate: 2
   startingEnergy: 10
+  size: 1
 --- !u!114 &1933662621569107887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,3 +180,16 @@ MonoBehaviour:
   foodMask:
     serializedVersion: 2
     m_Bits: 512
+--- !u!114 &3207488595792920840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933662621569107883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67c6bba1531d5d246b0ff0a190bbf188, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attr: {fileID: 1933662620391671219}

@@ -19,8 +19,6 @@ public class CreatureAttributes : MonoBehaviour
    
     public float startingEnergy = 10;
     public float size = 1;
-    private int generation = 1;
-
     private float deltaMutate = 0.1f;
 
     public CreatureState State { get; set; } = CreatureState.Wander;
@@ -47,9 +45,16 @@ public class CreatureAttributes : MonoBehaviour
         }
     }
 
-    public int Generation { get { return generation; } }
+    public int Generation { get; private set; } = 1;
 
     public Collider2D TargetFood { get; set; }
+
+    public Color GenColor { get; private set; }
+
+    private void OnValidate() {
+        GenColor = Random.ColorHSV();
+        GetComponent<SpriteRenderer>().color = GenColor;
+    }
 
     void Start() {
         Energy = startingEnergy;
@@ -115,7 +120,8 @@ public class CreatureAttributes : MonoBehaviour
         sightRadius = source.SightRadius;
         startingEnergy = source.StartingEnergy;
         Size = source.Size;
-        generation = source.Generation + 1;
+        Generation = source.Generation + 1;
+        GenColor = source.GenColor;
     }
 
     /// <summary>
